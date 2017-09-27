@@ -440,16 +440,17 @@
       "attributes": [
         "id:java.lang.String",
         "email:java.lang.String",
-        "nome:java.lang.String"
+        "nome:java.lang.String",
+        "cpf:java.lang.String"
       ],
       "methods": [],
       "position": {
-        "x": 195,
-        "y": 32
+        "x": 205,
+        "y": 31
       },
       "size": {
         "width": 156.4375,
-        "height": 118.65027618408203
+        "height": 129.4954833984375
       },
       "angle": 0,
       "multitenantContextJsonIgnore": false,
@@ -532,6 +533,29 @@
           "isEncryption": false,
           "referencedColumnName": "",
           "isSearchable": true
+        },
+        {
+          "name": "cpf",
+          "type": "java.lang.String",
+          "dbName": "cpf",
+          "dbLength": "",
+          "dbPrecision": "",
+          "dbScale": "",
+          "dbDefaultValue": "",
+          "label": "CPF",
+          "mask": "999.999.999-99",
+          "isPrimaryKey": false,
+          "isUniqueKey": true,
+          "isNullable": true,
+          "pkType": "",
+          "multitenantContext": "",
+          "jsonIgnore": false,
+          "isTransient": false,
+          "isInsertable": true,
+          "isUpdatable": true,
+          "isEncryption": false,
+          "referencedColumnName": "",
+          "isSearchable": false
         }
       ],
       "runtimeClass": "cronos.widgets.joint.uml.Class",
@@ -546,12 +570,12 @@
           "transform": "translate(0,0)"
         },
         ".uml-class-attrs-rect": {
-          "height": 90,
+          "height": 110,
           "transform": "translate(0,50)"
         },
         ".uml-class-methods-rect": {
           "height": 30,
-          "transform": "translate(0,140)"
+          "transform": "translate(0,160)"
         },
         ".uml-class-name-text": {
           "fill": "#000",
@@ -561,12 +585,12 @@
         },
         ".uml-class-attrs-text": {
           "font-size": 11,
-          "text": "id\nemail\nnome\n"
+          "text": "id\nemail\nnome\ncpf\n"
         },
         ".uml-class-attrs-value": {
           "ref-x": 62.03125,
           "font-size": 11,
-          "text": "java.lang.String\njava.lang.String\njava.lang.String\n"
+          "text": "java.lang.String\njava.lang.String\njava.lang.String\njava.lang.String\n"
         },
         ".uml-class-methods-text": {
           "fill": "#0066FF",

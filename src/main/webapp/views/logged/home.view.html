@@ -14,7 +14,7 @@
           <li class="dropdown component-holder" data-component="crn-menu-item" cronapp-security="visible : Administrators"> <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-users fa-lg"></i> <span>{{"Home.view.Admin" | translate}}</span> <span class="caret"></span> </a>
             <ul class="dropdown-menu">
               <li class=""><a href="#/home/admin/user" class="component-holder" data-component="crn-anchor">{{"Home.view.Users" | translate}}</a></li>
-            <li class=""><a href="#/home/logged/autor" class="component-holder" xattr-fullsize="display:inline;" style="" data-component="crn-anchor">Autor</a></li><li class=""><a href="#/home/logged/livro" class="component-holder" xattr-fullsize="display:inline;" style="" data-component="crn-anchor">Livros</a></li></ul> </li>
+            <li class=""><a href="#/home/logged/autor" class="component-holder" xattr-fullsize="display:inline;" style="" data-component="crn-anchor">Autor</a></li><li class=""><a href="#/home/logged/livro" class="component-holder" xattr-fullsize="display:inline;" style="" data-component="crn-anchor">Livros</a></li><li class=""><a href="#/home/logged/fornecedores" class="component-holder" xattr-fullsize="display:inline;" style="" data-component="crn-anchor">Fornecedores</a></li></ul> </li>
           <li class="dropdown component-holder navbar-right" data-component="crn-menu-item"> <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-lg fa-gear"></i> <span>{{"ChooseTheme" | translate}}</span> <span class="caret"></span> </a>
             <ul class="dropdown-menu">
               <li ng-repeat="theme in themes" ng-click="changeTheme(theme)"> <a href="javascript:void(0);" ng-class="{'bg-primary': myTheme==theme}">{{theme}} <i class="fa fa-lg fa-check pull-right" ng-if="myTheme==theme"></i></a></li>
@@ -24,13 +24,13 @@
               <li><a class="component-holder" data-toggle="modal" data-target="#modalPassword" data-component="crn-anchor">{{"Home.view.ChangePassword" | translate}}</a></li>
               <li ng-click="logout()"><a href="javascript:void(0);"><span>{{"Home.view.Logout" | translate}}</span></a></li>
             </ul> </li>
-        </ul>
+        <li class="dropdown component-holder" data-component="crn-menu-item" cronapp-security=""> <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span>Equipe</span> <span class="caret"></span></a> <ul class="dropdown-menu">   <li><a href="#/home/logged/projetos/desenvolvedores" class="component-holder" xattr-fullsize="display:inline;" style="" data-component="crn-anchor" cronapp-security="visible : desenvs">Desenvolvedores</a></li> <li><a href="#/home/logged/projetos/testadores" class="component-holder" xattr-fullsize="display:inline;" style="" data-component="crn-anchor" cronapp-security="">Testadores</a></li><li><a href="#/home/logged/projetos/requisitos" class="component-holder" xattr-fullsize="display:inline;" style="" data-component="crn-anchor" cronapp-security="">Requisitos</a></li></ul></li></ul>
       </div>
     </div>
   </nav>
 </div>
 <div ui-view="" class="container-fluid main-view" data-container="true">
-</div>
+<img src="views/Images/welcome.jpg" class="component-holder " style="display: block; width: 313px; height: 136px; margin-left: auto; margin-right: auto;" xattr-position="margin-left:auto; margin-right:auto;" data-component="crn-image" id="crn-image-943788"></div>
 
 <div class="modal fade" id="modalPassword">
   <div class="modal-dialog">

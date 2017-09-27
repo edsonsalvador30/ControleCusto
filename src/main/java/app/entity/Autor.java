@@ -15,7 +15,7 @@ import cronapi.rest.security.CronappSecurity;
  */
 @Entity
 @Table(name = "\"AUTOR\"" ,uniqueConstraints=@UniqueConstraint(columnNames={
-"email" ,"nome" }))
+"email" ,"nome" ,"cpf" }))
 @XmlRootElement
 @CronappSecurity
 @JsonFilter("app.entity.Autor")
@@ -47,6 +47,13 @@ public class Autor implements Serializable {
   @Column(name = "nome", nullable = false, unique = true, length=150, insertable=true, updatable=true)
   
   private java.lang.String nome;
+
+  /**
+  * @generated
+  */
+  @Column(name = "cpf", nullable = true, unique = true, insertable=true, updatable=true)
+  
+  private java.lang.String cpf;
 
   /**
    * Construtor
@@ -113,6 +120,26 @@ public class Autor implements Serializable {
    */
   public Autor setNome(java.lang.String nome){
     this.nome = nome;
+    return this;
+  }
+
+  /**
+   * Obtém cpf
+   * return cpf
+   * @generated
+   */
+  
+  public java.lang.String getCpf(){
+    return this.cpf;
+  }
+
+  /**
+   * Define cpf
+   * @param cpf cpf
+   * @generated
+   */
+  public Autor setCpf(java.lang.String cpf){
+    this.cpf = cpf;
     return this;
   }
 

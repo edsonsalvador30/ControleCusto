@@ -61,30 +61,18 @@
         <button class="btn btn-success" ng-click="datasource.post()"><i class="glyphicon glyphicon-ok"></i></button>
         <button class="btn btn-danger" ng-click="datasource.cancel()"><i class="glyphicon glyphicon-remove"></i></button>
       </div>
-      <br/>
+      <br>
       <fieldset ng-disabled="!datasource.editing &amp;&amp; !datasource.inserting">
         <div data-component="crn-textinput" id="crn-textinput-nome">
           <div class="form-group">
             <label for="textinput-nome" class="">Nome</label>
-            <input
-              type="text"
-              ng-model="Testadores.active.nome"
-              class="form-control"
-              id="textinput-nome"
-              placeholder="Nome"
-              required="required">
+            <input type="text" ng-model="Testadores.active.nome" class="form-control" id="textinput-nome" placeholder="Nome" required="required">
           </div>
         </div>
         <div data-component="crn-textinput" id="crn-textinput-projeto">
           <div class="form-group">
             <label for="textinput-projeto" class="">Projeto</label>
-            <input
-              type="text"
-              ng-model="Testadores.active.projeto"
-              class="form-control"
-              id="textinput-projeto"
-              placeholder="Projeto"
-              >
+            <input type="text" ng-model="Testadores.active.projeto" class="form-control" id="textinput-projeto" placeholder="Projeto">
           </div>
         </div>
         <!-- NtoN  -->

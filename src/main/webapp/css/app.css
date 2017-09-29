@@ -13,3 +13,17 @@ button.btn.btn-primary.btn-block {
   border-bottom: 0px inset rgb(255, 128, 0);
   background-color: rgb(255, 255, 0);
 }
+
+#crn-title-106425 { 
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-size: 39px;
+  color: rgb(0, 255, 0);
+}
+
+h1.component-holder.text-center { 
+  color: blue;
+}
+
+#crn-jumbotron-532692 { 
+  background-color: gray;
+}

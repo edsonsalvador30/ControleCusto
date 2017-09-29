@@ -6,6 +6,9 @@
 	<parameter name="DATA_LIMIT" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[10]]></defaultValueExpression>
 	</parameter>
+	<parameter name="image_1k1rr2h1os8690" class="java.lang.String">
+		<defaultValueExpression><![CDATA["reports/images/welcome.jpg"]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
     FORNECEDORES.telefone ,
@@ -37,40 +40,9 @@ limit $P{DATA_LIMIT}]]>
 		<fieldDescription><![CDATA[id]]></fieldDescription>
 	</field>
 	<title>
-		<band height="79"/>
-	</title>
-	<pageHeader>
-		<band height="35"/>
-	</pageHeader>
-	<columnHeader>
-		<band height="61">
+		<band height="79">
 			<staticText>
-				<reportElement x="22" y="11" width="100" height="20" uuid="4643b045-4520-4599-a961-3c91beaa3693"/>
-				<textElement textAlignment="Left" verticalAlignment="Top">
-					<font fontName="Arial" size="12"/>
-				</textElement>
-				<text><![CDATA[Nome]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="163" y="13" width="100" height="20" uuid="21d5abcb-9e93-4c79-a625-393c6ac2d8bb"/>
-				<textElement textAlignment="Left" verticalAlignment="Top">
-					<font fontName="Arial" size="12"/>
-				</textElement>
-				<text><![CDATA[Telefone]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="318" y="16" width="100" height="20" uuid="859df662-e183-437d-8a1a-493fb6c49052"/>
-				<textElement textAlignment="Left" verticalAlignment="Top">
-					<font fontName="Arial" size="12"/>
-				</textElement>
-				<text><![CDATA[Estado]]></text>
-			</staticText>
-		</band>
-	</columnHeader>
-	<detail>
-		<band height="125">
-			<textField>
-				<reportElement mode="Transparent" x="23" y="9" width="100" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="bfee0fa4-5edc-4c00-a697-18863e5ccec5"/>
+				<reportElement mode="Transparent" x="185" y="25" width="316" height="35" forecolor="#000000" backcolor="#FFFFFF" uuid="a4f3a695-98f3-4ed9-a990-06b76925fe6a"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -80,10 +52,73 @@ limit $P{DATA_LIMIT}]]>
 				<textElement textAlignment="Left" verticalAlignment="Top">
 					<font fontName="Arial" size="12"/>
 				</textElement>
+				<text><![CDATA[Relatorio de Testes Techne]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61">
+			<staticText>
+				<reportElement mode="Transparent" x="22" y="11" width="100" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="3a0cce1e-9ce7-4487-bbfb-bdf2739080e5"/>
+				<box>
+					<topPen lineWidth="4.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="4.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="4.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="4.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Nome]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="163" y="13" width="100" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="353028b5-2007-4aa8-a774-61041c7b2349"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Telefone]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="318" y="16" width="100" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="60ed4740-332f-4625-b568-0af28f7a4d95"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Estado]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="125">
+			<textField evaluationTime="Auto">
+				<reportElement mode="Transparent" x="23" y="9" width="100" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="77a5c1a1-4f5d-4758-9ec7-9d109c69c20c"/>
+				<box>
+					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="Arial" size="12"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement mode="Transparent" x="178" y="17" width="100" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="f9b8fb0c-4ece-44ae-b342-39da9fcb5812"/>
+				<reportElement mode="Transparent" x="178" y="17" width="100" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="4400aa34-0a15-4971-9ef1-952ad18b402b"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -96,7 +131,7 @@ limit $P{DATA_LIMIT}]]>
 				<textFieldExpression><![CDATA[$F{telefone}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement mode="Transparent" x="333" y="25" width="100" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="cf419c39-5be3-4356-b7ec-b43b0935fce3"/>
+				<reportElement mode="Transparent" x="333" y="25" width="100" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="b286144b-7908-4688-a02d-061e1b3fc547"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -108,6 +143,9 @@ limit $P{DATA_LIMIT}]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{estado}]]></textFieldExpression>
 			</textField>
+			<rectangle>
+				<reportElement x="204" y="26" width="435" height="73" uuid="cfbf9699-a1ce-4c88-9b62-325ba2374c24"/>
+			</rectangle>
 		</band>
 	</detail>
 	<columnFooter>

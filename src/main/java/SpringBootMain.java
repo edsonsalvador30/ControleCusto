@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 
+
 @SpringBootApplication
 @ComponentScan(basePackages = {
 	"cronapp.framework.authentication.normal",
@@ -23,7 +24,9 @@ import org.springframework.context.annotation.ComponentScan;
 public class SpringBootMain extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
+	  int interval = 30;
 		SpringApplication.run(SpringBootMain.class, args);
+		
 	}
 
 }

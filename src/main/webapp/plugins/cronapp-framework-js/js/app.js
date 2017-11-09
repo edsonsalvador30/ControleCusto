@@ -1,22 +1,28 @@
+var cronappModules = [
+  'ui.router',
+  'ui.select',
+  'ui-select-infinity',
+  'ngResource',
+  'ngSanitize',
+  'custom.controllers',
+  'custom.services',
+  'datasourcejs',
+  'chart.js',
+  'ngMask',
+  'ngJustGage',
+  'pascalprecht.translate',
+  'tmh.dynamicLocale',
+  'ui-notification',
+  'ui.bootstrap',
+  'ngFileUpload'
+];
+
+if (window.customModules) {
+  cronappModules = cronappModules.concat(window.customModules);
+}
+
 var app = (function() {
-  return angular.module('MyApp', [
-      'ui.router',
-      'ui.select',
-      'ui-select-infinity',
-      'ngResource',
-      'ngSanitize',
-      'custom.controllers',
-      'custom.services',
-      'datasourcejs',
-      'chart.js',
-      'ngMask',
-      'ngJustGage',
-      'pascalprecht.translate',
-      'tmh.dynamicLocale',
-      'ui-notification',
-      'ui.bootstrap',
-      'ngFileUpload'
-    ])
+  return angular.module('MyApp', cronappModules)
 
     .constant('LOCALES', {
       'locales': {
@@ -160,7 +166,19 @@ var app = (function() {
         }
       };
     }])
-
+    .decorator("$xhrFactory", [
+    	"$delegate", "$injector",
+    	function($delegate, $injector) {
+    		return function(method, url) {
+    			var xhr = $delegate(method, url);
+    			var $http = $injector.get("$http");
+    			var callConfig = $http.pendingRequests[$http.pendingRequests.length - 1];
+    			if (angular.isFunction(callConfig.onProgress))
+    				xhr.upload.addEventListener("progress",callConfig.onProgress);
+    			return xhr;
+    		};
+    	}
+    ])
     // General controller
     .controller('PageController', ["$scope", "$stateParams", "$location", "$http", "$rootScope", function($scope, $stateParams, $location, $http, $rootScope) {
 
@@ -216,6 +234,45 @@ app.userEvents = {};
 //Configuration
 app.config = {};
 app.config.datasourceApiVersion = 2;
+
+app.registerEventsCronapi = function($scope, $translate) {
+  for (var x in app.userEvents)
+    $scope[x] = app.userEvents[x].bind($scope);
+
+  $scope.vars = {};
+
+  try {
+    if (cronapi) {
+      $scope['cronapi'] = cronapi;
+      $scope['cronapi'].$scope = $scope;
+      $scope.safeApply = safeApply;
+      if ($translate) {
+        $scope['cronapi'].$translate = $translate;
+      }
+    }
+  } catch (e) {
+    console.info('Not loaded cronapi functions');
+    console.info(e);
+  }
+  try {
+    if (blockly)
+      $scope['blockly'] = blockly;
+  } catch (e) {
+    console.info('Not loaded blockly functions');
+    console.info(e);
+  }
+};
+
+window.safeApply = function(fn) {
+  var phase = this.$root.$$phase;
+  if (phase == '$apply' || phase == '$digest') {
+    if (fn && (typeof(fn) === 'function')) {
+      fn();
+    }
+  } else {
+    this.$apply(fn);
+  }
+};
 
 //Components personalization jquery
 var registerComponentScripts = function() {

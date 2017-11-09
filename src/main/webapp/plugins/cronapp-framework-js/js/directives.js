@@ -101,11 +101,13 @@
           element.datetimepicker(options);
 
           element.on('dp.change', function() {
-            if ($(this).is(":visible"))
+            if ($(this).is(":visible")) {
+              $(this).trigger('change');
               scope.$apply(read);
+            }
           });
 
-          ngModel.$render = function() {
+      ngModel.$render = function() {
 			if(ngModel.$viewValue){
 			  var momentDate = moment(ngModel.$viewValue);
 
@@ -152,7 +154,121 @@
         }
       }
     })
-
+    
+    .directive('dynamicImage', function($compile) {
+      var template = '';
+      return {
+        restrict: 'E',
+        replace: true,
+        scope: {
+            ngModel: '@',
+            width: '@',
+            height: '@',
+            style: '@',
+            class: '@'
+        },
+        require: 'ngModel',
+        template: '<div></div>',
+        init: function(s) {
+          if (!s.ngModel)
+            s.ngModel = '';
+          if (!s.width)
+            s.width = '128';
+          if (!s.height)
+            s.height = '128';
+          if (!s.style)
+            s.style = '';
+          if (!s.class)
+            s.class = '';
+          if (!this.containsLetter(s.width))
+            s.width += 'px';
+          if (!this.containsLetter(s.height))
+            s.height += 'px';
+        },
+        containsLetter: function(value) {
+          var containsLetter;
+          for (var i=0; i<value.length; i++) {
+            containsLetter = true;
+            for (var number = 0; number <10; number++)
+              if (parseInt(value[i]) == number)
+                containsLetter = false;
+            if (containsLetter)
+              break;
+          }
+          return containsLetter;
+        },
+        link: function(scope, element, attr) {
+          this.init(scope);
+          var s = scope;
+          var templateDyn    = '<div class="form-group upload-image-component" ngf-drop="" ngf-drag-over-class="dragover">\
+                                  <img class="$class$" style="$style$; height: $height$; width: $width$;" ng-if="$ngModel$" data-ng-src="{{$ngModel$.startsWith(\'http\') || ($ngModel$.startsWith(\'/\') && $ngModel$.length < 1000)? $ngModel$ : \'data:image/png;base64,\' + $ngModel$}}">\
+                                  <img class="$class$" style="$style$; height: $height$; width: $width$;" ng-if="!$ngModel$" data-ng-src="/plugins/cronapp-framework-js/img/selectImg.svg" class="btn" ng-if="!$ngModel$" ngf-drop="" ngf-select="" ngf-change="cronapi.internal.setFile(\'$ngModel$\', $file)" accept="image/*;capture=camera">\
+                                  <div class="remove btn btn-danger btn-xs" ng-if="$ngModel$" ng-click="$ngModel$=null">\
+                                    <span class="glyphicon glyphicon-remove"></span>\
+                                  </div>\
+                                  <div class="btn btn-info btn-xs start-camera-button" ng-if="!$ngModel$" ng-click="cronapi.internal.startCamera(\'$ngModel$\')">\
+                                    <span class="glyphicon glyphicon-facetime-video"></span>\
+                                  </div>\
+                                </div>';
+          element.append(templateDyn
+                          .split('$height$').join(s.height)
+                          .split('$width$').join(s.width)
+                          .split('$ngModel$').join(s.ngModel)
+                          .split('$style$').join(s.style)
+                          .split('$class$').join(s.class)
+                          );
+          $compile(element)(element.scope());
+      }
+    }
+  })
+  .directive('dynamicFile', function($compile) {
+      var template = '';
+      return {
+        restrict: 'E',
+        replace: true,
+        scope: {
+            ngModel: '@',
+        },
+        require: 'ngModel',
+        template: '<div></div>',
+        init: function(s) {
+          if (!s.ngModel)
+            s.ngModel = '';
+        },
+        link: function(scope, element, attr) {
+          this.init(scope);
+          var s = scope;
+          
+          var splitedNgModel = s.ngModel.split('.');
+          var datasource = splitedNgModel[0];
+          var field = splitedNgModel[splitedNgModel.length-1];
+          var number = Math.floor((Math.random() * 1000) + 20);
+          
+          var templateDyn    = '<div ng-show="!$ngModel$">\
+                                  <div class="form-group upload-image-component" ngf-drop="" ngf-drag-over-class="dragover"> \
+                                    <img class="ng-scope" style="height: 128px; width: 128px;" ng-if="!$ngModel$" data-ng-src="/plugins/cronapp-framework-js/img/selectFile.png" ngf-drop="" ngf-select="" ngf-change="cronapi.internal.uploadFile(\'$ngModel$\', $file, \'uploadprogress$number$\')" accept="*">\
+                                    <progress id="uploadprogress$number$" max="100" value="0" style="position: absolute; width: 128px; margin-top: -134px;">0</progress>\
+                                  </div>\
+                                </div> \
+                                <div ng-show="$ngModel$" class="form-group upload-image-component"> \
+                                  <div class="btn btn-danger btn-xs ng-scope" style="float:right;" ng-if="$ngModel$" ng-click="$ngModel$=null"> \
+                                    <span class="glyphicon glyphicon-remove"></span> \
+                                  </div> \
+                                  <div> \
+                                    <div ng-bind-html="cronapi.internal.generatePreviewDescriptionByte($ngModel$)"></div> \
+                                    <a href="javascript:void(0)" ng-click="cronapi.internal.downloadFileEntity($datasource$,\'$field$\')">download</a> \
+                                  </div> \
+                                </div> ';
+          element.append(templateDyn
+                          .split('$ngModel$').join(s.ngModel)
+                          .split('$datasource$').join(datasource)
+                          .split('$field$').join(field)
+                          .split('$number$').join(number)
+                          );
+          $compile(element)(element.scope());
+      }
+    }
+  })
     .directive('pwCheck', [function() {
       'use strict';
       return {
@@ -224,12 +340,68 @@
           }
 
           if (!show) {
-            element.hide();
+            $(element).hide();
           }
 
           if (!enabled) {
-            element.find('*').attr('disabled', true);
+            $(element).find('*').addBack().attr('disabled', true);
           }
+        }
+      }
+    })
+    .directive('cronappFilter', function() {
+      return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+          var typeElement = $(element).attr('type');
+          if (attrs.asDate != undefined)
+            typeElement = 'date';
+          
+          var filterTemplate = '';
+          var filtersSplited = attrs.cronappFilter.split(';');
+          $(filtersSplited).each(function() {
+            if (this.length > 0) {
+              //Se for do tipo text passa parametro como like
+              if (typeElement == 'text')
+                filterTemplate+=this+'@=%{value}%;';
+              //Senão passa parametro como valor exato
+              else
+                filterTemplate+=this+'={value};';
+            }
+          });
+          if (filterTemplate.length > 0)
+            filterTemplate = filterTemplate.substr(0, filterTemplate.length-1);
+          else
+            filterTemplate = '%{value}%';
+          
+          if (typeElement == 'text') {
+            $(element).on("keyup", function() {
+              var datasource = eval(attrs.crnDatasource);
+              var bindedFilter = filterTemplate.split('{value}').join(this.value);
+              if (this.value.length == 0)
+                bindedFilter = '';
+                
+              datasource.search(bindedFilter);
+            });
+          }
+          else {
+            $(element).on("change", function() {
+              var datasource = eval(attrs.crnDatasource);
+              
+              var value = undefined;
+              var typeElement = $(this).attr('type');
+              if (typeElement == 'checkbox')
+                value = $(this).is(':checked');
+              else
+                value = this.value;
+              
+              var bindedFilter = filterTemplate.split('{value}').join(value);
+              if (value.toString().length == 0)
+                bindedFilter = '';
+              datasource.search(bindedFilter);
+            });
+          }
+          
         }
       }
     })

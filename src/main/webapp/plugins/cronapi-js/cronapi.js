@@ -204,7 +204,7 @@
 
     var resultData = $.ajax({
       type: 'POST',
-      url: serverUrl,
+      url: (window.hostApp || "") + serverUrl,
       dataType: 'html',
       data : JSON.stringify(dataCall),
       headers : {
@@ -379,7 +379,7 @@
 
     var resultData = $.ajax({
       type: 'POST',
-      url: serverUrl,
+      url: (window.hostApp || "") + serverUrl,
       dataType: 'html',
       data : JSON.stringify(dataCall),
       async: false,
@@ -426,6 +426,18 @@
    * @returns {ObjectType.STRING}
    */
   this.cronapi.util.executeJavascriptNoReturn = function(value) {
+     eval( value );
+  };
+
+  /**
+   * @type function
+   * @name {{executeJavascriptNoReturnName}}
+   * @nameTags executeJavascriptReturn
+   * @description {{executeJavascriptReturnDescription}}
+   * @param {ObjectType.STRING} value {{executeJavascriptNoReturnParam0}}
+   * @returns {ObjectType.STRING}
+   */
+  this.cronapi.util.executeJavascriptReturn = function(value) {
     return eval( value );
   };
 
@@ -764,6 +776,18 @@
    $('#modalTemplate').modal('show');
    
   };
+  
+  /**
+   * @type function
+   * @name {{showModal}}
+   * @nameTags Show| Modal| Exibir| Mostrar
+   * @description {{showModalDesc}}
+   * @param {ObjectType.STRING} component {{ComponentParam}}
+   * @multilayer true
+   */
+    this.cronapi.screen.showModal = function(/** @type {ObjectType.OBJECT} @blockType ids_from_screen*/ id) {
+        $('#'+id).modal('show');
+  };
 
   /**
    * @type function
@@ -786,7 +810,8 @@
    * @multilayer true
    */
   this.cronapi.screen.showComponent = function(/** @type {ObjectType.OBJECT} @blockType ids_from_screen*/ id) {
-    $('#'+id).show();
+    $("#"+id).get(0).style.setProperty("display", "block", "important");
+    
   };
   
   /**
@@ -798,7 +823,7 @@
    * @multilayer true
    */
   this.cronapi.screen.hideComponent = function(/** @type {ObjectType.OBJECT} @blockType ids_from_screen*/ id) {
-    $('#'+id).hide();
+    $("#"+id).get(0).style.setProperty("display", "none", "important");
   };
   
   /**
@@ -810,7 +835,7 @@
    * @multilayer true
    */
   this.cronapi.screen.disableComponent = function(/** @type {ObjectType.OBJECT} @blockType ids_from_screen*/ id) {
-   $.each( $('#input').find('*').addBack(), function(index, value){ $(value).prop('disabled',true); });
+   $.each( $('#'+id).find('*').addBack(), function(index, value){ $(value).prop('disabled',true); });
   };
   
   /**
@@ -822,9 +847,22 @@
    * @multilayer true
    */
   this.cronapi.screen.enableComponent = function(/** @type {ObjectType.OBJECT} @blockType ids_from_screen*/ id) {
-    $.each( $('#input').find('*').addBack(), function(index, value){ $(value).prop('disabled',false); });
+    $.each( $('#'+id).find('*').addBack(), function(index, value){ $(value).prop('disabled',false); });
   };
-
+  
+  /**
+   * @type function
+   * @name {{changeAttrValueName}}
+   * @nameTags changeAttrValue
+   * @description {{changeAttrValueDesc}}
+   * @param {ObjectType.STRING} id {{idsFromScreen}}
+   * @param {ObjectType.STRING} attrName {{attrName}}
+   * @param {ObjectType.STRING} attrValue {{attrValue}}
+   * @multilayer true
+   */
+  this.cronapi.screen.changeAttrValue = function(/** @type {ObjectType.OBJECT} @blockType ids_from_screen*/ id , /** @type {ObjectType.STRING} */ attrName, /** @type {ObjectType.STRING} */ attrValue ) {
+    $('#'+id).attr(attrName , attrValue);
+  };
 
   /**
    * @category CategoryType.DATETIME
@@ -1064,7 +1102,7 @@
     var dd = dateVar.getDate();
     var mm = dateVar.getMonth() + 1;
     var yyyy = dateVar.getFullYear();
-    var	separator = '';
+    var separator = '';
     var maskChars = 'dmy';
     for (var i = 0; i < format.length; i++) {
       if (!maskChars.includes(format.toLowerCase().charAt(i))) {
@@ -1492,6 +1530,670 @@
     return;
   };
 
+  this.cronapi.internal = {};
+  
+  this.cronapi.internal.setFile = function(field, file) {
+    cronapi.internal.fileToBase64(file, function(base64) { cronapi.screen.changeValueOfField(field, base64); });
+  };
+  
+  this.cronapi.internal.fileToBase64 = function(file, cb) {
+      var fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = function(e) {
+          debugger;
+          var base64Data = e.target.result.substr(e.target.result.indexOf('base64,') + 'base64,'.length);
+          cb(base64Data);
+      };
+  };
+  
+  this.cronapi.internal.startCamera = function(field) {
+    var cameraContainer =   '<div class="camera-container" style="margin-left:-$marginleft$;margin-top:-$margintop$">\
+                                    <div class="btn btn-success" id="cronapiVideoCaptureOk" style="position: absolute; z-index: 999999999;">\
+                                        <span class="glyphicon glyphicon-ok"></span>\
+                                    </div>\
+                                    <div class="btn btn-danger" id="cronapiVideoCaptureCancel" style="position: absolute; margin-left: 42px; z-index: 999999999;">\
+                                        <span class="glyphicon glyphicon-remove"></span>\
+                                    </div>\
+                                    <video id="cronapiVideoCapture" style="height: $height$; width: $width$;" autoplay=""></video>\
+                            </div>';
+    
+    
+    function getMaxResolution(width, height) {
+      var maxWidth = window.innerWidth; 
+      var maxHeight = window.innerHeight; 
+      var ratio = 0;
+
+      ratio = maxWidth / width;   
+      height = height * ratio;    
+      width = width * ratio;
+
+      if(width > maxWidth){
+          ratio = maxWidth / width;   
+          height = height * ratio;    
+          width = width * ratio;
+      }
+      
+      if(height > maxHeight){
+          ratio = maxHeight / height; 
+          width = width * ratio;
+          height = height * ratio;
+      }
+      
+      return { width: width, height: height };
+    }
+    
+    var streaming = null;
+    var mediaConfig =  { video: true };
+    var errBack = function(e) {
+    	console.log('An error has occurred!', e)
+    };
+    
+    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia(mediaConfig).then(function(stream) {
+          streaming = stream;
+          
+          var res = getMaxResolution(stream.getTracks()[0].getSettings().width, stream.getTracks()[0].getSettings().height);
+          var halfWidth = res.width;
+          var halfHeight = res.height;
+          try {
+            halfWidth = parseInt(halfWidth/2);
+            halfHeight = parseInt(halfHeight/2);
+          }
+          catch (e) { }
+          
+          cameraContainer = 
+          cameraContainer
+          .split('$height$').join(res.height+'px')
+          .split('$width$').join(res.width+'px')
+          .split('$marginleft$').join(halfWidth+'px')
+          .split('$margintop$').join(halfHeight+'px')
+          ;
+          var cronapiVideoCapture = $(cameraContainer);
+          cronapiVideoCapture.prependTo("body");
+          var videoDOM = document.getElementById('cronapiVideoCapture');
+          
+          cronapiVideoCapture.find('#cronapiVideoCaptureCancel').on('click',function() {
+             if (streaming!= null && streaming.getTracks().length > 0)
+                streaming.getTracks()[0].stop();
+             $(cronapiVideoCapture).remove();
+          });
+        
+          cronapiVideoCapture.find('#cronapiVideoCaptureOk').on('click',function() {
+             cronapi.internal.captureFromCamera(field, res.width, res.height);
+             if (streaming!= null && streaming.getTracks().length > 0)
+                streaming.getTracks()[0].stop();
+             $(cronapiVideoCapture).remove();
+          });
+          
+          videoDOM.src = window.URL.createObjectURL(stream);
+          videoDOM.play();
+        });
+    }
+  }; 
+   
+  this.cronapi.internal.captureFromCamera = function(field, width, height) {
+    var canvas = document.createElement("canvas"); // create img tag
+    canvas.width = width;
+    canvas.height = height;
+    var context = canvas.getContext('2d');
+    var videoDOM = document.getElementById('cronapiVideoCapture');
+		context.drawImage(videoDOM, 0, 0, width, height);
+		var base64 = canvas.toDataURL().substr(22);
+		cronapi.screen.changeValueOfField(field, base64);
+  };
+  
+  this.cronapi.internal.castBase64ToByteArray = function(base64) {
+    var binary_string =  window.atob(base64);
+    var len = binary_string.length;
+    var bytes = new Uint8Array( len );
+    for (var i = 0; i < len; i++)        {
+        bytes[i] = binary_string.charCodeAt(i);
+    }
+    return bytes;
+  };
+  
+  this.cronapi.internal.castByteArrayToString = function(bytes) {
+    return String.fromCharCode.apply(null, new Uint16Array(bytes));
+  };
+  
+  this.cronapi.internal.generatePreviewDescriptionByte = function(data) {
+    var json;
+    try {
+      //Verificando se é JSON Uploaded file
+      json = JSON.parse(data);
+    }
+    catch (e) {
+      try {
+        //Tenta pegar do header
+        json = JSON.parse(cronapi.internal.castByteArrayToString(cronapi.internal.castBase64ToByteArray(data)))
+      }
+      catch (e) {
+        //Verifica se é drpobox
+        if (data && data.indexOf('dropboxusercontent') > -1) {
+          json = {};
+          var urlSplited = data.split('/');
+          var fullName = urlSplited[urlSplited.length - 1].replace('?dl=0','');
+          var fullNameSplited = fullName.split('.')
+          var extension = '.' + fullNameSplited[fullNameSplited.length - 1];
+          json.fileExtension = extension;
+          json.name = fullName.replace(extension, '');
+          json.contentType = 'file/'+extension.replace('.','');
+        }
+      }
+    }
+    if (json) {
+      if (json.name.length > 25)
+        json.name = json.name.substr(0,22)+'...';
+        
+      var result = "<b>Nome:</b> <br/>" + json.name +"<br/>";
+      result += "<b>Content-Type:</b> <br/>" + json.contentType +"<br/>";
+      result += "<b>Extensão:</b> <br/>" + json.fileExtension +"<br/>";
+      return result;
+    }
+  };
+  
+  this.cronapi.internal.downloadFileEntity = function(datasource, field, indexData) {
+    var tempJsonFileUploaded = null;
+    var valueContent;
+    var itemActive;
+    if (indexData) {
+      valueContent = datasource.data[indexData][field];
+      itemActive = datasource.data[indexData];
+    }
+    else {
+      try {
+        valueContent = datasource.active[field]; 
+        itemActive = datasource.active;
+      }
+      catch (e) {
+        valueContent = datasource[field]; 
+        itemActive = datasource;
+      }
+    }
+    //Verificando se é JSON Uploaded file
+    try {
+      var tempJsonFileUploaded = JSON.parse(valueContent);
+    }
+    catch(e) { }
+    
+    if (tempJsonFileUploaded) {
+      window.open('/api/cronapi/filePreview/'+tempJsonFileUploaded.path);
+    }
+    else if (valueContent.indexOf('dropboxusercontent') > -1) {
+      window.open(valueContent);
+    }
+    else {
+      var url = '/api/cronapi/downloadFile';
+      var splited = datasource.entity.split('/');
+      
+      var entity = splited[splited.length-1];
+      if (entity.indexOf(":") > -1) {
+        //Siginifica que é relacionamento, pega a entidade do relacionamento
+        var entityRelation = '';
+        var splitedDomainBase = splited[3].split('.');
+        for (var i=0; i<splitedDomainBase.length-1;i++)
+          entityRelation += splitedDomainBase[i]+'.';
+        var entityRelationSplited = entity.split(':');
+        entity = entityRelation + entityRelationSplited[entityRelationSplited.length-1];
+      }
+      
+      url += '/' + entity;
+      url += '/' + field;
+      var _u = JSON.parse(sessionStorage.getItem('_u'));
+      var object = itemActive;
+      this.$promise = cronapi.$scope.$http({
+          method: 'POST',
+          url: (window.hostApp || "") + url,
+          data: (object) ? JSON.stringify(object) : null,
+          responseType: 'blob',
+          headers: {
+            'Content-Type': 'application/json', 
+            'X-AUTH-TOKEN': _u.token,
+          }
+      }).success(function(data, status, headers, config) {
+          var octetStreamMime = 'application/octet-stream';
+          headers = headers();
+          var filename = headers['x-filename'] || 'download.bin';
+          var contentType = headers['content-type'] || octetStreamMime;
+          var urlCreator = window.URL || window.webkitURL || window.mozURL || window.msURL;      
+          try
+          {
+            var link = document.createElement('a');
+            if('download' in link)
+            {
+              var url = urlCreator.createObjectURL(data);
+              link.setAttribute('href', url);
+              link.setAttribute("download", filename);
+              var event = document.createEvent('MouseEvents');
+              event.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+              link.dispatchEvent(event);
+            }
+          } catch(ex) {
+            console.log('Error downloading file');
+            console.log(ex);
+          }
+      }).error(function(data, status, headers, config) {
+          console.log('Error downloading file');
+      });
+    }
+    
+  };
+  
+  this.cronapi.internal.uploadFile = function(field, file, progressId) {
+    var uploadUrl = '/api/cronapi/uploadFile';
+    var formData = new FormData();
+    formData.append("file", file);
+    var _u = JSON.parse(sessionStorage.getItem('_u'));
+    this.$promise = cronapi.$scope.$http({
+        method: 'POST',
+        url: (window.hostApp || "") + uploadUrl,
+        data: formData,
+        headers:  {
+          'Content-Type': undefined, 
+          'X-AUTH-TOKEN': _u.token 
+        },
+        onProgress: function(event) {
+  				if (event.lengthComputable) {
+            var complete = (event.loaded / event.total * 100 | 0);
+            if (progressId) {
+              var progress = document.getElementById(progressId);
+              progress.value = progress.innerHTML = complete;
+            }
+          }
+				}
+    }).success(function(data, status, headers, config) {
+        cronapi.screen.changeValueOfField(field, data.jsonString);
+    }).error(function(data, status, headers, config) {
+        alert('Error uploading file');
+    });
+  };
+  
+  /**
+   * @category CategoryType.OBJECT
+   * @categoryTags OBJECT|object
+   */
+  this.cronapi.object = {};
+
+    /**
+   *  @type function
+    * @name {{getProperty}}
+    * @nameTags getProperty
+    * @param {ObjectType.OBJECT} object {{object}}
+    * @param {ObjectType.STRING} property {{property}}
+    * @description {{getPropertyDescription}}
+    * @returns {ObjectType.OBJECT}
+   */
+   this.cronapi.object.getProperty = function(object, property) {
+     var split = property.split('.');
+     for (var i = 0; i < split.length; i++){ 
+       object = object[split[i]];
+     }
+     return object;
+   };
+   
+    /**
+   *  @type function
+    * @name {{setProperty}}
+    * @nameTags setProperty
+    * @param {ObjectType.OBJECT} object {{object}}
+    * @param {ObjectType.STRING} property {{property}}
+    * @param {ObjectType.OBJECT} value {{value}} 
+    * @description {{setPropertyDescription}}
+    * @returns {ObjectType.VOID}
+   */
+   this.cronapi.object.setProperty = function(object, property, value) {
+     var split = property.split('.');
+     for (var i = 0; i < split.length; i++){ 
+       object = object[split[i]];
+     }
+     object = value;
+   };  
+    
+   /**
+    * @category CategoryType.DEVICE
+    * @categoryTags CORDOVA|cordova|Dispositivos|device|Device
+    */
+   this.cronapi.cordova = {};
+
+   /**
+    *  @type function
+     * @name {{vibrate}}
+     * @platform M
+     * @nameTags vibrate
+     * @param {ObjectType.OBJECT} vibrateValue {{vibrateValue}}
+     * @description {{vibrateDescription}}
+     * @returns {ObjectType.VOID}
+    */
+   this.cronapi.cordova.vibrate = function(vibrateValue){
+     navigator.vibrate(vibrateValue);
+   };
+   
+   this.cronapi.cordova.geolocation = {};
+   
+     /**
+    *  @type function
+     * @platform M
+     * @name {{getCurrentPosition}}
+     * @nameTags geolocation|getCurrentPosition
+     * @param {ObjectType.STATEMENTSENDER} success {{success}}
+     * @param {ObjectType.STATEMENTSENDER} error {{error}}
+     * @description {{getCurrentPositionDescription}}
+     * @returns {ObjectType.VOID}
+    */
+   this.cronapi.cordova.geolocation.getCurrentPosition = function(success, error){
+     navigator.geolocation.getCurrentPosition(success, error);
+   };
+   
+       /**
+    *  @type function
+     * @platform M
+     * @name {{watchPosition}}
+     * @nameTags geolocation|watchPosition
+     * @param {ObjectType.STATEMENTSENDER} success {{success}}
+     * @param {ObjectType.STATEMENTSENDER} error {{error}}
+     * @param {ObjectType.LONG} maximumAge {{maximumAge}}
+     * @param {ObjectType.LONG} timeout {{timeout}}
+     * @param {ObjectType.BOOLEAN} enableHighAccuracy {{enableHighAccuracy}}
+     * @description {{watchPositionDescription}}
+     * @returns {ObjectType.LONG}
+    */
+   this.cronapi.cordova.geolocation.watchPosition = function(success, error, maximumAge, timeout, enableHighAccuracy){
+    return navigator.geolocation.watchPosition(callbackSuccess, callbackError, { maximumAge: maximumAge, timeout: timeout, enableHighAccuracy: enableHighAccuracy });
+   };
+   
+       /**
+    *  @type function
+     * @platform M
+     * @name {{clearWatchPosition}}
+     * @nameTags geolocation|clearWatch
+     * @param {ObjectType.LONG} watchID {{watchID}}
+     * @description {{clearWatchPositionDescription}}
+     * @returns {ObjectType.VOID}
+    */
+   this.cronapi.cordova.geolocation.clearWatchPosition = function(watchID){
+     navigator.geolocation.clearWatch(watchID);
+   };
+   
+   this.cronapi.cordova.camera = {};
+   
+   /**
+     * @type function
+     * @platform M
+     * @name {{getPicture}}
+     * @nameTags geolocation|getPicture
+     * @description {{getPictureDescription}}
+     * @returns {ObjectType.VOID}
+    */
+    
+   this.cronapi.cordova.camera.getPicture = function(/** @type {ObjectType.STATEMENTSENDER} @description {{success}} */ success, /** @type {ObjectType.STATEMENTSENDER} @description {{error}} */  error, /** @type {ObjectType.LONG} @description {{destinationType}} @blockType util_dropdown @keys 0|1|2 @values DATA_URL|FILE_URI|NATIVE_URI  */  destinationType, /** @type {ObjectType.LONG} @description {{pictureSourceType}} @blockType util_dropdown @keys 0|1|2 @values PHOTOLIBRARY|CAMERA|SAVEDPHOTOALBUM  */ pictureSourceType) {
+     navigator.camera.getPicture(success, error, { destinationType: destinationType , sourceType : pictureSourceType });
+   };
+   
+   
+    this.cronapi.cordova.file = {};
+   
+    /**
+     * @type function
+     * @platform M
+     * @name {{getDirectory}}
+     * @nameTags file|arquivo|directory|diretorio
+     * @description {{getDirectoryDescription}}
+     * @returns {ObjectType.STRING}
+    */
+   this.cronapi.cordova.file.getDirectory = function(/** @type {ObjectType.LONG} @description {{type}} @blockType util_dropdown @keys 0|1 @values {{INTERNAL}}|{{EXTERNAL}}  */  type) {
+    var path;
+    if (type == '0') {
+      path = cordova.file.dataDirectory ;
+    } else {
+        path = cordova.file.externalApplicationStorageDirectory;
+        if (!path) {
+          path = cordova.file.externalDataDirectory;
+        }
+        if (!path) {
+          path = cordova.file.syncedDataDirectory;
+        }
+    }
+    return path;
+   };
+   
+   
+    /**
+     * @type function
+     * @platform M
+     * @name {{removeFile}}
+     * @nameTags file|arquivo|removeFile|remover
+     * @param {ObjectType.STRING} fileName {{fileName}}
+     * @param {ObjectType.STATEMENTSENDER} success {{success}}
+     * @param {ObjectType.STATEMENTSENDER} error {{error}}
+     * @description {{removeFileDescription}}
+     * @returns {ObjectType.VOID}
+    */
+     this.cronapi.cordova.file.removeFile = function(fileName, success, error) {
+        window.resolveLocalFileSystemURL(fileName, function (fileEntry) { 
+          fileEntry.remove(function (entry) { 
+          if (success)
+            success(entry);
+          },error);
+        },error);
+     };
+   
+     /**
+     * @type function
+     * @platform M
+     * @name {{readFile}}
+     * @nameTags file|arquivo|readFile|lerarquivo
+     * @param {ObjectType.STRING} fileName {{fileName}}
+     * @param {ObjectType.STATEMENTSENDER} success {{success}}
+     * @param {ObjectType.STATEMENTSENDER} error {{error}}
+     * @description {{readFileDescription}}
+     * @returns {ObjectType.VOID}
+    */
+     this.cronapi.cordova.file.readFile = function(fileName, success, error) {
+        window.resolveLocalFileSystemURL(fileName, function (fileEntry) { 
+          fileEntry.file(function (file) { 
+            var reader = new FileReader();
+            reader.onloadend = function (e) {
+                success(this.result);
+            };
+            reader.readAsText(file);
+          },error);
+        },error);
+     };
+   
+     /**
+     * @type function
+     * @platform M
+     * @name {{createFile}}
+     * @nameTags file|arquivo|createFile|criararquivo
+     * @param {ObjectType.STRING} dirEntry {{dirEntry}}
+     * @param {ObjectType.STRING} fileName {{fileName}}
+     * @param {ObjectType.STRING} content {{content}}
+     * @param {ObjectType.STATEMENTSENDER} success {{success}}
+     * @param {ObjectType.STATEMENTSENDER} error {{error}}
+     * @description {{createFileDescription}}
+     * @returns {ObjectType.VOID}
+    */
+   this.cronapi.cordova.file.createFile = function(dirEntry, fileName, content, success, error) {
+     var path = (dirEntry || getDirectory(0));  
+    window.resolveLocalFileSystemURL(dirEntry,  function(directoryEntry) {
+      console.log(dirEntry);
+        directoryEntry.getFile(fileName, {create: true }, function (fileEntry) {
+           fileEntry.createWriter(function(fileWriter) {
+             fileWriter.onwriteend = function (e) {
+                  console.log('Write of file "' + fileName + '"" completed.');
+              };
+              fileWriter.onerror = function (e) {
+                  console.log('Write failed: ' + e.toString());
+              };
+              var data = new Blob([content], { type: 'text/plain' });
+              fileWriter.write(data);
+              if (success) {
+                setTimeout(function() {
+                  success();   
+                },500);
+              }
+           }, error);
+        }, error);
+    }, error);
+   };
+   
+      /**
+     * @type function
+     * @platform M
+     * @name {{createDirectory}}
+     * @nameTags file|arquivo|criardiretorio
+     * @param {ObjectType.STRING} dirParent {{dirParent}}
+     * @param {ObjectType.STRING} dirChildrenName {{dirChildrenName}}
+     * @param {ObjectType.STATEMENTSENDER} success {{success}}
+     * @param {ObjectType.STATEMENTSENDER} error {{error}}
+     * @description {{createDirectoryDescription}}
+     * @returns {ObjectType.VOID}
+    */
+     this.cronapi.cordova.file.createDirectory = function(dirParent, dirChildrenName, success, error) {
+        window.resolveLocalFileSystemURL(dirParent,  function(directoryEntry) {
+          parentEntry.getDirectory(dirChildrenName, { create: true }, function (childrenEntry) {
+            if (success)
+                success(childrenEntry);
+          },error);
+        }, error);
+     };
+
+      this.cronapi.cordova.storage = {}; 
+
+      /**
+     * @type function
+     * @platform M
+     * @name {{setStorageItem}}
+     * @nameTags storage
+     * @param {ObjectType.STRING} key {{key}}
+     * @param {ObjectType.OBJECT} value {{value}}
+     * @description {{setStorageItemDescription}}
+     * @returns {ObjectType.VOID}
+    */
+     this.cronapi.cordova.storage.setStorageItem = function(key, value) {
+        var storage = window.localStorage;
+        if (storage) {
+          storage.setItem(key, value);
+        } else {
+          console.error('Local Storage not Found!');
+        }
+     };
+     
+      /**
+     * @type function
+     * @platform M
+     * @name {{getStorageItem}}
+     * @nameTags storage|getItem
+     * @param {ObjectType.STRING} key {{key}}
+     * @description {{getStorageItemDescription}}
+     * @returns {ObjectType.OBJECT}
+    */
+     this.cronapi.cordova.storage.getStorageItem = function(key) {
+        var storage = window.localStorage;
+        if (storage) {
+          return storage.getItem(key);
+        } else {
+          console.error('Local Storage not Found!');
+        }
+     };
+   
+       /**
+     * @type function
+     * @platform M
+     * @name {{removeStorageItem}}
+     * @nameTags storage|remove
+     * @param {ObjectType.STRING} key {{key}}
+     * @description {{removeStorageItemDescription}}
+     * @returns {ObjectType.VOID}
+    */
+     this.cronapi.cordova.storage.removeStorageItem = function(key) {
+        var storage = window.localStorage;
+        if (storage) {
+          storage.removeItem(key);
+        } else {
+          console.error('Local Storage not Found!');
+        }
+     };
+     
+     this.cronapi.cordova.connection = {};
+     
+     /**
+      * @type function
+      * @platform M
+      * @name {{getConnection}}
+      * @nameTags connection
+      * @description {{getConnectionDescription}}
+      * @returns {ObjectType.BOOLEAN}
+     */
+     this.cronapi.cordova.connection.getConnection = function() {
+       return navigator.connection.type;
+     };
+     
+       /**
+      * @type function
+      * @platform M
+      * @name {{verifyConnection}}
+      * @nameTags connection
+      * @description {{verifyConnectionDescription}}
+      * @returns {ObjectType.BOOLEAN}
+     */
+     this.cronapi.cordova.connection.verifyConnection = function(/** @type {ObjectType.STRING} @description {{type}} @blockType util_dropdown @keys Connection.UNKNOWN|Connection.ETHERNET|Connection.WIFI|Connection.CELL_2G|Connection.CELL_3G|Connection.CELL_4G|Connection.CELL|Connection.NONE @values {{UnknownConnection}}|{{EthernetConnection}}|{{WiFiConnection}}|{{Cell2GConnection}}|{{Cell3GConnection}}|{{Cell4GConnection}}|{{CellGenericConnection}}|{{NoNetworkConnection}}  */  type) {
+       return (navigator.connection.type == type);
+     };
+ 
+     this.cronapi.cordova.database = {};
+     this.cronapi.cordova.database.nameDefault = "cronappDB";
+
+     /**
+      * @type function
+      * @platform M
+      * @name {{openDatabase}}
+      * @nameTags openDatabase
+      * @param {ObjectType.STRING} name {{name}}
+      * @description {{openDatabaseDescription}}
+      * @returns {ObjectType.VOID}
+     */
+     this.cronapi.cordova.database.openDatabase = function(dbName) {
+       if (!dbName) {
+         this.cronapi.cordova.database.name = this.cronapi.cordova.database.nameDefault;
+         if (window.BuildInfo) {
+           this.cronapi.cordova.database.name = BuildInfo.packageName;
+         }
+       } 
+       this.cronapi.cordova.database.object = window.openDatabase({ name : this.cronapi.cordova.database.name });
+     };
+     
+     /**
+      * @type function
+      * @platform M
+      * @name {{executeSql}}
+      * @nameTags executesql
+      * @param {ObjectType.STRING} text {{text}}
+      * @param {ObjectType.OBJECT} array {{array}}
+      * @param {ObjectType.STATEMENTSENDER} success {{success}}
+      * @param {ObjectType.STATEMENTSENDER} error {{error}}
+      * @description {{executeSqlDescription}}
+      * @returns {ObjectType.VOID}
+     */
+     this.cronapi.cordova.database.executeSql = function(text, array, success , error){
+       
+       // exist DB
+       if (!this.cronapi.cordova.database.object)
+         this.cronapi.cordova.database.openDatabase(); // create DB
+       
+       // open transaction
+       this.cronapi.cordova.database.object.transaction(function(connect){
+         // execute SQL
+         connect.executeSql(text,array, success);
+       }.bind(this), function(e){
+         // error
+         console.log(e);
+         error(e);
+       }.bind(this));
+       
+     };
+     
+     
   //Private variables and functions
   var ptDate = function(varray) {
     var date;
